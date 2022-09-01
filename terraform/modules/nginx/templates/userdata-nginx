@@ -1,0 +1,60 @@
+#!/bin/bash
+#
+# Userdata for the nginx instance
+
+
+# Install nginx
+
+apt update
+apt install -y nginx
+
+
+# Configure nginx listener
+
+cat <<- EOF > /etc/nginx/sites-enabled/${server_name}
+upstream v1Backend {
+  server bastion.client.network:${azure_port};
+}
+upstream v2ProdBackend {
+  server api.client.com:${service_port};
+}
+upstream v2TestBackend {
+  server api-dev.client.com:${service_port};
+}
+server {
+  listen ${service_port};
+  listen [::]:${service_port};
+  server_name ${server_name};
+  location / {
+      mirror /v2;
+      mirror /v2Test;
+      proxy_set_header X-SERVER-PORT \$server_port;
+      proxy_set_header X-SERVER-ADDR \$server_addr;
+      proxy_set_header HOST \$http_host;
+      proxy_set_header X-REAL-IP \$remote_addr;
+      proxy_pass https://v1Backend;
+  }
+  location = /v2 {
+    internal;
+    proxy_set_header X-SERVER-PORT \$server_port;
+    proxy_set_header X-SERVER-ADDR \$server_addr;
+    proxy_set_header HOST \$http_host;
+    proxy_set_header X-REAL-IP \$remote_addr;
+    proxy_pass https://v2ProdBackend\$request_uri;
+  }
+  location = /v2Test {
+    internal;
+    proxy_set_header X-SERVER-PORT \$server_port;
+    proxy_set_header X-SERVER-ADDR \$server_addr;
+    proxy_set_header HOST \$http_host;
+    proxy_set_header X-REAL-IP \$remote_addr;
+    proxy_pass https://v2TestBackend\$request_uri;
+  }
+}
+EOF
+
+
+# Start nginx service
+
+systemctl restart nginx
+systemctl enable nginx

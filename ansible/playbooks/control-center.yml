@@ -1,0 +1,8 @@
+---
+
+- name: control-center container stack setup
+  hosts: localhost
+  gather_facts: False
+  become: False
+  roles:
+    - control-center

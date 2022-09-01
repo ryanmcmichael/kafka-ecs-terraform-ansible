@@ -1,0 +1,15 @@
+
+- include: playbooks/zookeeper.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    kafka_zk_cluster_name: "{{kafka_zk_cluster_name}}"
+
+- include: playbooks/kafka.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    kafka_zk_cluster_name: "{{kafka_zk_cluster_name}}"
+

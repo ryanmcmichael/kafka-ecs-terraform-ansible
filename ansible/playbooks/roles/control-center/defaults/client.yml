@@ -1,0 +1,64 @@
+task_family: "CONTROL-CENTER-{{env}}"
+network_mode: "awsvpc"
+security_groups:
+  - "{{site_sg_id}}"
+subnets:
+  - "{{private_subnet_0}}"
+  - "{{private_subnet_1}}"
+  - "{{private_subnet_2}}"
+c1_appname: control-center-{{env}}
+c1_cpu: 200
+c1_memory: 2048
+c1_soft_memory: 512
+c1_load_balancers:
+  - c1targetGroupArn: >
+      "{{control_center_target_group_arn}}"
+    c1containerName: >
+      "control-center-{{env}}"
+    c1loadBalancerName: >
+      "KAFKA-INTERNAL-{{env}}"
+    c1containerPort: >
+      {{control_center_port}}
+c1_containerPorts:
+  - c1protocol: tcp
+    c1containerPort: >
+      {{control_center_port}}
+c1_image: confluentinc/cp-enterprise-control-center
+c1_essential: True
+c1_privileged: False
+c1_environment_variables:
+  - c1name: CHANGELOG_REPLICATION_FACTOR
+    c1value: >
+       "1"
+  - c1name: SERVICES_CLUSTER_NAME
+    c1value: services-cluster-{{env}}
+  - c1name: CONTROL_CENTER_ZOOKEEPER_CONNECT
+    c1value: >
+      "zookeeper.{{env}}-internal.com:{{zookeeper_port}}"
+  - c1name: CONTROL_CENTER_BOOTSTRAP_SERVERS
+    c1value: >
+      "kafka.{{env}}-internal.com:{{kafka_port}}"
+  - c1name: CONTROL_CENTER_REPLICATION_FACTOR
+    c1value: >
+       "1"
+  - c1name: CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS
+    c1value: >
+       "1"
+  - c1name: CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS
+    c1value: >
+       "1"
+c1_awslogs_group: "{{log_group_name}}"
+c1_log_region: "{{region}}"
+c1_awslogs_stream_prefix: control-center-{{env}}
+c1_docker_labels: control-center-{{env}}
+c1_docker_security_options: no-new-privileges
+
+# Service Setup
+cluster_name: "Site-cluster-{{env}}"
+service_name: "control-center"
+
+count: "1"
+
+# Stage to Prod it has to be rolling update
+maximumPercent: 200
+minimumHealthyPercent: 50

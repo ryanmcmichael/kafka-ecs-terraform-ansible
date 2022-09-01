@@ -1,0 +1,142 @@
+#!/bin/bash
+#
+# Userdata for the kafka instance
+
+
+# Install Java
+
+apt update
+apt install -y openjdk-8-jdk awscli postgresql-client-common postgresql-client
+
+
+# Add kafka user
+
+useradd kafka -m
+adduser kafka sudo
+mkdir /home/kafka/.ssh/
+cp -R /home/ubuntu/.ssh/* /home/kafka/.ssh/
+
+
+# Install kafka
+
+mkdir /home/kafka/Downloads
+curl "http://www-eu.apache.org/dist/kafka/2.2.0/kafka_2.12-2.2.0.tgz" -o /home/kafka/Downloads/kafka.tgz
+mkdir /home/kafka/kafka && cd /home/kafka/kafka
+tar -xvzf /home/kafka/Downloads/kafka.tgz --strip 1
+
+
+# Configure kafka service
+
+cat <<- EOF > /home/kafka/kafka/config/server.properties
+  broker.id=${brokerID}
+  num.network.threads=3
+  num.io.threads=8
+  socket.send.buffer.bytes=102400
+  socket.receive.buffer.bytes=102400
+  socket.request.max.bytes=104857600
+  log.dirs=/tmp/kafka-logs
+  num.partitions=1
+  num.recovery.threads.per.data.dir=1
+  offsets.topic.replication.factor=3
+  transaction.state.log.replication.factor=3
+  transaction.state.log.min.isr=1
+  log.retention.hours=168
+  log.segment.bytes=1073741824
+  log.retention.check.interval.ms=300000
+  zookeeper.connect=kafka1.${environment}-internal.com:2181,kafka2.${environment}-internal.com:2181,kafka3.${environment}-internal.com:2181
+  zookeeper.connection.timeout.ms=6000
+  group.initial.rebalance.delay.ms=0
+  changelog.replication.factor=3
+  listeners=PLAINTEXT://:29092
+  port=29092
+  advertised.port=29092
+  advertised.host.name=kafka${brokerID}.${environment}-internal.com
+  advertised.listeners=PLAINTEXT://kafka${brokerID}.${environment}-internal.com:29092
+  auto.leader.rebalance.enable=true
+  delete.topic.enable=true
+  auto.create.topics.enable=false
+EOF
+
+
+# Configure zookeeper service
+
+cat <<- EOF > /home/kafka/kafka/config/zookeeper.properties
+initLimit=5
+syncLimit=2
+server.1=kafka1.${environment}-internal.com:2891:3881
+server.2=kafka2.${environment}-internal.com:2892:3882
+server.3=kafka3.${environment}-internal.com:2893:3883
+dataDir=/tmp/zookeeper
+clientPort=2181
+maxClientCnxns=0
+EOF
+
+
+# Add zookeeper service definition
+
+cat <<- EOF > /etc/systemd/system/zookeeper.service
+[Unit]
+Requires=network.target remote-fs.target
+After=network.target remote-fs.target
+
+[Service]
+Type=simple
+User=kafka
+ExecStart=/home/kafka/kafka/bin/zookeeper-server-start.sh /home/kafka/kafka/config/zookeeper.properties
+ExecStop=/home/kafka/kafka/bin/zookeeper-server-stop.sh
+Restart=on-abnormal
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+# Add kafka service definition
+
+cat <<- EOF > /etc/systemd/system/kafka.service
+[Unit]
+Requires=zookeeper.service
+After=zookeeper.service
+
+[Service]
+Type=simple
+User=kafka
+ExecStart=/bin/sh -c '/home/kafka/kafka/bin/kafka-server-start.sh /home/kafka/kafka/config/server.properties > /home/kafka/kafka/kafka.log 2>&1'
+ExecStop=/home/kafka/kafka/bin/kafka-server-stop.sh
+Restart=on-abnormal
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+# Start zookeeper service
+
+mkdir /tmp/zookeeper
+chown -R kafka:kafka /tmp/zookeeper/
+chown -R kafka:kafka /home/kafka/
+echo "${brokerID}" > /tmp/zookeeper/myid
+systemctl start zookeeper
+systemctl enable zookeeper
+
+
+# Wait, then start kafka service
+
+sleep 180
+systemctl start kafka
+systemctl enable kafka
+
+
+# Install logging tools
+
+cd ~
+mkdir rapid7
+aws s3 sync s3://client-terraform-remote-state/tools/rapid7/ rapid7/
+cd rapid7
+chmod u+x agent_installer.sh
+./agent_installer.sh install_start
+
+sleep 10
+cd /opt/rapid7/ir_agent/components/insight_agent/common/config
+aws s3 cp s3://client-terraform-remote-state/tools/rapid7/logging.json .
+service ir_agent restart

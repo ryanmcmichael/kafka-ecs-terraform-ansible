@@ -1,0 +1,403 @@
+---
+
+#####################################################################################
+#####################################################################################
+
+- include: playbooks/ttn-dc2-raw.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/ttn-dc2-raw-legacy.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/tti-elsys-raw.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/tti-ewattch-raw.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/tti-nke-raw.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/control-center.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/asset-manager.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/ttn-transformer-dc2.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/tti-transformer-elsys.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/tti-transformer-ewattch.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/tti-transformer-nke.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/sensor-enricher.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/sensor-manager.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/threshold-anomaly-detector.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/threshold-model-manager.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/rateofchange-anomaly-detector.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/rateofchange-model-manager.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/spike-anomaly-detector.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/spike-model-manager.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/anomaly-processor.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/ehs-alert-processor.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/ehs-mongo-events.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/ehs-mongo-alerts.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/asset-enricher.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/email-notification-service.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/call-notification-service.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/sms-notification-service.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/escalation-manager.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/escalation-service.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/notification-permissions-manager.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/notifications-enricher.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/offline-sensor-manager.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/offline-sensor-monitor.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/permissions-manager.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/response-manager.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/sensor-manager.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/site-enricher.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/site-manager.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/system-enricher.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/system-manager.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/user-enricher.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/user-manager.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/api-gateway.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/event-history-service.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/loxone-data-source.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/loxone-transformer.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/ga-data-source.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/ga-transformer.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/generic-data-source.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/generic-transformer.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/sigfox-data-source.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/sigfox-transformer.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/webway-data-source.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/webway-transformer.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/alert-generator.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/gwt-data-source.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"
+
+- include: playbooks/gwt-transformer.yml
+  vars:
+    ecs_action: create
+    env: "{{env}}"
+    region: "{{region}}"
+    services_cluster_name: "{{services_cluster_name}}"

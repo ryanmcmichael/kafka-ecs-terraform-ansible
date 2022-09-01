@@ -1,0 +1,9 @@
+---
+
+#- include: kafka.yml
+
+- include: kafka1.yml
+
+- include: kafka2.yml
+
+- include: kafka3.yml

@@ -1,0 +1,15 @@
+---
+
+# Deploy zookeeper clusters
+
+- include: zoo1.yml
+
+#- include: zoo2.yml
+
+#- include: zoo3.yml
+
+#- include: zoo4.yml
+
+#- include: zoo5.yml
+
+#- include: zoo-route53.yml

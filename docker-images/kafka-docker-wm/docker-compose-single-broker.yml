@@ -1,0 +1,16 @@
+version: '2'
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+  kafka:
+    build: .
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka.development-internal.com
+      KAFKA_CREATE_TOPICS: "ttn-raw:1:1,ttn-failure:1:1,events:1:1,anomaly-pipeline-output:1:1,anomaly-processing-output:1:1,enriched-asset:1:1,enriched-systems:1:1,enriched-notifications:1:1,enriched-user:1:1,telegram-notification-outbound:1:1,users:1:1,sensors:1:1,sensor_nofitifications:1:1,threshold-models:1:1,threshold-models-results:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper.development-internal.com:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

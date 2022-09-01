@@ -1,0 +1,51 @@
+#cloud-config
+
+repo_update: all
+repo_upgrade: all
+
+packages:
+ - python
+ - perl
+ - perl-Switch
+ - perl-DateTime
+ - perl-Sys-Syslog
+ - perl-LWP-Protocol-https
+ - perl-Digest-SHA
+ - nfs-utils
+
+write_files:
+ - content: |
+      ECS_CLUSTER=${ecs_cluster_name}
+      ECS_AVAILABLE_LOGGING_DRIVERS=["json-file","syslog","fluentd","awslogs"]
+   path: /etc/ecs/ecs.config
+# - content: |
+#      #!/bin/bash
+#      environment=${environment}
+#
+#      cd /root
+#      aws s3 cp s3://client-terraform-remote-state/${environment}/topics.txt . --region eu-west-2
+#      container=$(docker ps -qf "name=kafka")
+#
+#      while read topic; do
+#        echo "Creating topic $topic..."
+#        command="kafka-topics --create --if-not-exists --replication-factor 3 --partitions 20 --zookeeper zookeeper.${environment}-internal.com --topic $topic"
+#        docker exec $container $command
+#        command="kafka-topics --alter --partitions 20 --zookeeper zookeeper.${environment}-internal.com --topic $topic"
+#        docker exec $container $command
+#      done <topics.txt
+#   path: /etc/sysconfig/cloudformation
+#   permissions: 755
+#   owner: root
+
+
+runcmd:
+- easy_install pip
+- /usr/local/bin/pip install -q awscli
+- mkdir ${efs_data_dir}
+- chown -R ec2-user:ec2-user ${efs_data_dir}
+- echo "${efs_fs_id}.efs.${region}.amazonaws.com:/ ${efs_data_dir} nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 0 0" >> /etc/fstab
+- mount -a -t nfs4
+- service docker restart
+- start ecs
+- rm /etc/init/scope.conf
+#- echo '*/5 * * * * root sh /root/topics.sh >> /var/log/syslog' >> /etc/crontab

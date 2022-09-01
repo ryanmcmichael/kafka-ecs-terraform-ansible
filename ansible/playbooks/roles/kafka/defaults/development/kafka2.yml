@@ -1,0 +1,93 @@
+task_family: "KAFKA2"
+network_mode: 'bridge'
+security_groups:
+  - "{{kafka_sg_id}}"
+subnets:
+  - "{{private_subnet_0}}"
+  - "{{private_subnet_1}}"
+  - "{{private_subnet_2}}"
+
+# First container
+c1_appname: kafka2
+c1_cpu: 512
+c1_memory: 3500
+c1_soft_memory: 1024
+c1_load_balancers:
+  - c1targetGroupArn: >
+      "{{kafka_target_group_arn}}"
+    c1containerName: >
+      "kafka2"
+    c1loadBalancerName: >
+      "KAFKA-INTERNAL-{{env}}"
+    c1containerPort: >
+      {{kafka_port}}
+c1_ports:
+  - c1hostPort: >
+      {{kafka_port_1}}
+    c1containerPort: >
+      {{kafka_port_1}}
+    c1protocol: tcp
+  - c1hostPort: >
+      {{kafka_port}}
+    c1containerPort: >
+      {{kafka_port}}
+    c1protocol: tcp
+c1_image: confluentinc/cp-kafka
+c1_essential: True
+c1_privileged: False
+c1_environment_variables:
+#  - c1name: CHANGELOG_REPLICATION_FACTOR
+#    c1value: >
+#       "1"
+#  - c1name: KAFKA_ADVERTISED_PORT
+#    c1value: >
+#       "{{kafka_port}}"
+#  - c1name: KAFKA_ADVERTISED_HOST_NAME
+#    c1value: >
+#      "kafka.{{env}}-internal.com"
+  - c1name: KAFKA_ADVERTISED_LISTENERS
+    c1value: >
+      "PLAINTEXT://kafka2.{{env}}-internal.com:{{kafka_port}}"
+  - c1name: KAFKA_ZOOKEEPER_CONNECT
+    c1value: >
+      "zookeeper.{{env}}-internal.com:{{zookeeper_port}}"
+  - c1name: KAFKA_AUTO_LEADER_REBALANCE_ENABLE
+    c1value: >
+      "true"
+  - c1name: KAFKA_DELETE_TOPIC_ENABLE
+    c1value: >
+      "true"
+  - c1name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+    c1value: >
+       "3"
+  - c1name: KAFKA_BROKER_ID
+    c1value: >
+       "2"
+  - c1name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+    c1value: >
+       "false"
+
+c1_awslogs_group: "/aws/ecs/{{env}}"
+# Our logs go to eu-west-1
+c1_log_region: "eu-west-1"
+c1_awslogs_stream_prefix: kafka2
+c1_docker_labels: kafka2
+c1_docker_security_options: no-new-privileges
+
+
+# Volume attachment
+
+src_volume_name: "kafka-data"
+volume_src_path: "/kafka-data/kafka-2/"
+mount_container_path: "/var/lib/kafka/data"
+mount_readonly_bool: False
+
+
+# Service Setup
+cluster_name: "Kafka-cluster-{{env}}"
+service_name: "kafka-service-2"
+count: "1"
+
+# Stage to Prod it has to be rolling update
+maximumPercent: 200
+minimumHealthyPercent: 50

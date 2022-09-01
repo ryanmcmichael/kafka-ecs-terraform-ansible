@@ -1,0 +1,48 @@
+#!/bin/bash
+#
+# Userdata for the ECS cluster
+
+
+# Stop services
+
+docker ps -q | xargs docker stop
+service docker stop
+stop ecs
+
+
+# Mount, format, and link ephemeral storage
+
+DEV="/dev/nvme2n1"
+umount $DEV 2>/dev/null || true
+mkdir /mnt/docker-volumes 2>/dev/null || rm -rf /mnt/docker-volumes/*
+mkfs.ext4 $DEV
+rm -rf /var/lib/docker/vfs
+rm -rf /var/lib/docker/volumes
+mount -t ext4 -o noatime $DEV /mnt/docker-volumes
+mkdir /mnt/docker-volumes/vfs
+ln -s /mnt/docker-volumes/vfs /var/lib/docker/vfs
+mkdir /mnt/docker-volumes/volumes
+ln -s /mnt/docker-volumes/volumes /var/lib/docker/volumes
+# ADD THIS MOUNT TO FSTAB FOR REBOOT
+#  rm /var/lib/ecs/data/ecs_agent_data.json ON REBOOT
+
+
+# Install packages
+
+yum update -y
+yum install -y python perl perl-Switch perl-DateTime perl-Sys-Syslog perl-LWP-Protocol-https perl-Digest-SHA nfs-utils
+easy_install pip
+/usr/local/bin/pip install awscli
+
+
+# Create ECS config file
+
+echo "ECS_CLUSTER=Site-cluster-${environment}" > /etc/ecs/ecs.config
+echo "ECS_AVAILABLE_LOGGING_DRIVERS=[\"json-file\",\"syslog\",\"fluentd\",\"awslogs\"]" >> /etc/ecs/ecs.config
+
+
+# Start docker and ECS
+
+service docker restart
+start ecs
+rm /etc/init/scope.conf
